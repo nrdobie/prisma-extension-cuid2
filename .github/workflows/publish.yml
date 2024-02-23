@@ -1,11 +1,14 @@
-name: pr
+name: publish
 concurrency:
-  group: pr-${{ github.github.base_ref }}
+  group: publish-${{ github.github.base_ref }}
   cancel-in-progress: true
 on:
-  pull_request:
-    paths-ignore:
-      - '**/*.md'
+  push:
+    branches:
+      - main
+      - next
+      - beta
+      - alpha
 jobs:
   test-and-publish:
     name: Test and Publish
@@ -47,4 +50,9 @@ jobs:
         run: pnpm exec prisma db push
       - name: Run tests
         run: pnpm run ci:test
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm exec semantic-release
 
