@@ -36,6 +36,7 @@
   "devDependencies": {
     "@eslint/js": "^8.56.0",
     "@prisma/client": "^5.10.2",
+    "@semantic-release/git": "^10.0.1",
     "@tanstack/config": "^0.5.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.11.20",
@@ -46,6 +47,7 @@
     "prettier": "^3.2.5",
     "prisma": "^5.10.2",
     "publint": "^0.2.7",
+    "semantic-release": "^23.0.2",
     "tmp": "^0.2.1",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.0.2",
