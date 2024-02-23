@@ -8,7 +8,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build && publint --strict",
-    "test": "vitest"
+    "test": "vitest",
+    "ci:test": "vitest --coverage",
+    "ci:lint": "eslint --max-warnings 0 ./src"
   },
   "exports": {
     ".": {
