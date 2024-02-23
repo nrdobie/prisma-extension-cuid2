@@ -41,6 +41,8 @@ jobs:
         name: Setup Node.js
         with:
           node-version: 20
+      - name: Build Prisma Test DB
+        run: pnpm exec prisma db push
       - name: Run tests
-        run: pnpm test --coverage
+        run: pnpm test -- --coverage
 
