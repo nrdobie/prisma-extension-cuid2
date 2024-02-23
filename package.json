@@ -1,0 +1,63 @@
+{
+  "name": "prisma-extension-cuid2",
+  "version": "0.0.1",
+  "description": "Enables the use of CUID2 as the default ID type for Prisma models",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "vite build && publint --strict",
+    "test": "vitest"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "prisma",
+    "cuid",
+    "cuid2"
+  ],
+  "author": "Nicholas Dobie <nick@dobie.me>",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^8.56.0",
+    "@prisma/client": "^5.10.2",
+    "@tanstack/config": "^0.5.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/node": "^20.11.20",
+    "@types/tmp": "^0.2.6",
+    "@vitest/coverage-v8": "^1.3.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "prisma": "^5.10.2",
+    "publint": "^0.2.7",
+    "tmp": "^0.2.1",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^7.0.2",
+    "vite": "^5.1.4",
+    "vite-tsconfig-paths": "^4.3.1",
+    "vitest": "^1.3.1"
+  },
+  "peerDependencies": {
+    "@prisma/client": "^5.10.2"
+  },
+  "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
+    "immer": "^10.0.3"
+  }
+}
