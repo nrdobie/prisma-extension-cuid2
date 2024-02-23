@@ -1,0 +1,46 @@
+name: pr
+concurrency:
+  group: publish-${{ github.github.base_ref }}
+  cancel-in-progress: true
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+jobs:
+  test-and-publish:
+    name: Test and Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          depth: 0
+      - uses: pnpm/action-setup@v2
+        name: Install PNPM
+        with:
+          version: 8
+          run_install: false
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Get PNPM store directory
+        id: pnpm-store
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - uses: actions/cache@v3
+        name: Setup PNPM cache
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+      - uses: actions/setup-node@v4
+        name: Setup Node.js
+        with:
+          node-version: 20
+      - name: Run tests
+        run: pnpm test --coverage
+
