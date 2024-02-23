@@ -51,6 +51,8 @@ jobs:
         run: pnpm exec prisma db push
       - name: Run tests
         run: pnpm run ci:test
+      - name: Build
+        run: pnpm run build
       - name: Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
