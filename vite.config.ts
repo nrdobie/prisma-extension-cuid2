@@ -5,7 +5,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 const config = defineConfig({
   plugins: [tsconfigPaths()],
   test: {
-    coverage: {},
+    coverage: {
+      exclude: ["src/index.ts", "src/valid-fields.ts", "src/factories/get-fields-function.ts"],
+    },
   },
 });
 

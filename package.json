@@ -62,6 +62,7 @@
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
-    "immer": "^10.0.3"
+    "immer": "^10.0.3",
+    "zod": "^3.22.4"
   }
 }

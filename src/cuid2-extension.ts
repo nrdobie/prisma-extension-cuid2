@@ -2,39 +2,17 @@ import { init } from "@paralleldrive/cuid2";
 import { Prisma } from "@prisma/client";
 import { produce } from "immer";
 
-import getFieldsFactory from "./get-fields-factory";
+import getExactFieldsFactory from "./factories/get-exact-fields-factory";
+import { type GetFieldsFunction } from "./factories/get-fields-function";
+import getWildcardFieldsFactory from "./factories/get-wildcard-fields-factory";
+import { type ExcludeField, type Field, type IncludeField } from "./valid-fields";
+import { exactValidator, wildcardValidator } from "./validators";
 
-const FIELD_REGEX = /^([^:]+):([^:]+)$/;
 const OPERATIONS = ["create", "createMany", "upsert"];
 
 type Cuid2InitOptions = Parameters<typeof init>[0];
 
-export type Cuid2ExtensionOptions = {
-  /**
-   * The fields to automatically set the CUID2 value on.
-   *
-   * Provide the fields in the format of `ModelName:FieldName`. You can use `*` to match all models.
-   *
-   * @example ["User:userId", "Post:postId"]
-   * @example ["*:id", "Post:secondId"]
-   *
-   * @default ["*:id"]
-   */
-  includeFields?: string[];
-
-  /**
-   * The fields to exclude from being automatically set the CUID2 value on.
-   *
-   * This is useful if you have a small number of fields that you want to exclude from being automatically set.
-   * You can use `*` to exclude all fields on a model.
-   *
-   * Provide the fields in the format of `ModelName:FieldName`.
-   *
-   * @example ["User:id"]
-   * @example ["Post:*"]
-   */
-  excludeFields?: string[];
-
+export type Cuid2ExtensionOptionsBase = {
   /**
    * This allows you to customize the CUID2 generation.
    *
@@ -52,35 +30,63 @@ export type Cuid2ExtensionOptions = {
   cuid2Options?: Cuid2InitOptions;
 };
 
-const DEFAULT_OPTIONS: Cuid2ExtensionOptions = {
-  includeFields: ["*:id"],
+type Cuid2ExtensionOptionsWildcard = {
+  /**
+   * The fields to automatically set the CUID2 value on.
+   *
+   * Provide the fields in the format of `ModelName:FieldName`. You can use `*` to match all models.
+   *
+   * @example ["User:userId", "Post:postId"]
+   * @example ["*:id", "Post:secondId"]
+   *
+   * @default ["*:id"]
+   */
+  includeFields?: IncludeField[];
+
+  /**
+   * The fields to exclude from being automatically set the CUID2 value on.
+   *
+   * This is useful if you have a small number of fields that you want to exclude from being automatically set.
+   * You can use `*` to exclude all fields on a model.
+   *
+   * Provide the fields in the format of `ModelName:FieldName`.
+   *
+   * @example ["User:id"]
+   * @example ["Post:*"]
+   */
+  excludeFields?: ExcludeField[];
 };
 
+type Cuid2ExtensionOptionsExact = {
+  /**
+   * Requires the exact fields to include for the CUID2 extension.
+   *
+   * This is the recommended way to use the extension as it provides a clear understanding of which fields are being
+   * affected and supports type safety.
+   */
+  fields: Field[];
+};
+
+export type Cuid2ExtensionOptions = Cuid2ExtensionOptionsBase &
+  (Cuid2ExtensionOptionsWildcard | Cuid2ExtensionOptionsExact);
+
 export default function cuid2Extension(options?: Cuid2ExtensionOptions) {
-  const mergedOptions = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  };
-
-  if (!mergedOptions.includeFields) {
-    throw new Error("You must provide the `includeFields` option.");
+  if (options && "fields" in options && ("includeFields" in options || "excludeFields" in options)) {
+    throw new Error("You cannot provide both `fields` and `includeFields`/`excludeFields` options.");
   }
 
-  if (mergedOptions.includeFields.length === 0) {
-    throw new Error("You must provide at least one field in the `includeFields` option.");
+  let getFields: GetFieldsFunction;
+  if (options === undefined) {
+    getFields = getWildcardFieldsFactory(["*:id"]);
+  } else if ("fields" in options) {
+    const validatedOptions = exactValidator.parse(options);
+    getFields = getExactFieldsFactory(validatedOptions.fields);
+  } else {
+    const validatedOptions = wildcardValidator.parse(options);
+    getFields = getWildcardFieldsFactory(validatedOptions.includeFields, validatedOptions.excludeFields);
   }
 
-  if (mergedOptions.includeFields.some((applyToField) => !FIELD_REGEX.test(applyToField))) {
-    throw new Error("The `includeFields` option must be in the format of `ModelName:FieldName`.");
-  }
-
-  if (mergedOptions.excludeFields && mergedOptions.excludeFields.some((skipField) => !FIELD_REGEX.test(skipField))) {
-    throw new Error("The `excludeFields` option must be in the format of `ModelName:FieldName`.");
-  }
-
-  const createId = init(mergedOptions.cuid2Options);
-
-  const getFields = getFieldsFactory(mergedOptions.includeFields, mergedOptions.excludeFields);
+  const createId = init(options?.cuid2Options);
 
   return Prisma.defineExtension({
     name: "cuid2",

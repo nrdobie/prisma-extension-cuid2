@@ -48,6 +48,23 @@ test("cuid2Extension sets the CUID2 value on the specified fields", async () => 
   expect(singleId.id).not.toMatch(UUID_REGEX);
 });
 
+test("cuid2Extension sets the CUID2 value on the exact fields", async () => {
+  const cuid2 = cuid2Extension({
+    fields: ["DualId:id", "SingleId:id"],
+  });
+
+  const modifiedPrismaClient = prismaClient.$extends(cuid2);
+
+  const singleId = await modifiedPrismaClient.singleId.create({
+    data: {
+      value: "test",
+    },
+  });
+
+  expect(singleId.id).toBeTypeOf("string");
+  expect(singleId.id).not.toMatch(UUID_REGEX);
+});
+
 test("cuid2Extension does not set the CUID2 value on fields not specified", async () => {
   const cuid2 = cuid2Extension({
     includeFields: ["*:id"],

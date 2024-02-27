@@ -1,7 +1,4 @@
-/**
- * Function that returns the fields on a model to apply the CUID2 extension
- */
-export type GetFieldsFunction = (operationModel: string) => string[];
+import { type GetFieldsFunction } from "./get-fields-function";
 
 /**
  * Returns a function that returns the fields to apply to a model
@@ -9,7 +6,10 @@ export type GetFieldsFunction = (operationModel: string) => string[];
  * @param includeFields
  * @param excludeFields
  */
-export default function getFieldsFactory(includeFields: string[], excludeFields: string[] = []): GetFieldsFunction {
+export default function getWildcardFieldsFactory(
+  includeFields: string[],
+  excludeFields: string[] = [],
+): GetFieldsFunction {
   return (operationModel: string) => {
     const includeFieldsForModel = includeFields
       .filter((includeField) => {

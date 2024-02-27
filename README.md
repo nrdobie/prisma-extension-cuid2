@@ -35,26 +35,46 @@ model DualId {
 }
 ```
 
-Then when initializing your PrismaClient, extend it with the `cuid2` middleware:
+Then when initializing your PrismaClient, extend it with the `cuid2` middleware and provide the fields you want to
+use CUID2 for:
 
 ```typescript
 import { PrismaClient } from '@prisma/client'
 import cuid2Extension from 'prisma-extension-cuid2'
 
-const prisma = new PrismaClient().$extend(cuid2Extension())
+const prisma = new PrismaClient().$extend(cuid2Extension({
+  fields: ['SingleId:id', 'DualId:id1', 'DualId:id2']
+}))
 
 export default prisma
 ```
 
+By default if you don't specify the `fields` or `includeFields` options, the extension will use the `*:id` pattern to
+apply the extension which can cause issues, see the options section for more information.
+
+
 ## Options
+
+### `fields` _(recommended)_
+
+Specify the fields to apply the extension to. This option takes in an array of `ModelName:FieldName` strings. This is
+the recommended way to use the extension, as it provides the most safety and control.
+
+```typescript
+cuid2Extension({
+  fields: ['SingleId:id', 'DualId:id1', 'DualId:id2']
+})
+```
 
 ### `includeFields` and `excludeFields`
 
-By default, the extension will apply to all fields with the name of `id` in your schema. If you want to customize which
-fields the extension applies to, you can use the `includeFields` and `excludeFields` options. Both options take in an
-array of `ModelName:FieldName` strings, The `includeFields` supports `*` as a wildcard for model names and
-`excludeFields` supports `*` as a wildcard for field names.
+If your schema is large and has a fairly standard format for models, you can use the `includeFields` and `excludeFields`
+options instead of specifying each field individually. These options take in an array of `ModelName:FieldName` strings,
+with `includeFields` supporting wildcard model names and `excludeFields` supporting wildcard field names.
 
+**DANGER:** Due to how Prisma generates code, this extension does not have a way to know which fields are on any given
+model. The extension will attempt to set the include fields on every model that matches regardless of whether the field
+exists. This will cause runtime errors if you are not careful.
 ```typescript
 // Changing the default field name from `id` to `cuid`
 cuid2Extension({

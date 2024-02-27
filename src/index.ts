@@ -1,3 +1,4 @@
+// skip v8 check
 import cuid2Extension, { Cuid2ExtensionOptions } from "./cuid2-extension";
 
 export default cuid2Extension;
