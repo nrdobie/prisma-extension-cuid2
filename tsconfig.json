@@ -9,9 +9,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
   },
   "include": ["**/*.ts", "**/*.tsx", "vite.config.ts"],
   "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"]

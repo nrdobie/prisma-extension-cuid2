@@ -2,7 +2,7 @@ import { init } from "@paralleldrive/cuid2";
 import { Prisma } from "@prisma/client";
 import { produce } from "immer";
 
-import getFieldsFactory from "@/get-fields-factory";
+import getFieldsFactory from "./get-fields-factory";
 
 const FIELD_REGEX = /^([^:]+):([^:]+)$/;
 const OPERATIONS = ["create", "createMany", "upsert"];
