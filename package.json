@@ -1,6 +1,6 @@
 {
   "name": "prisma-extension-cuid2",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Enables the use of CUID2 as the default ID type for Prisma models",
   "repository": "https://github.com/nrdobie/prisma-extension-cuid2",
   "main": "./dist/cjs/index.cjs",
