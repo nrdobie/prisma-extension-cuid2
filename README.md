@@ -42,7 +42,7 @@ use CUID2 for:
 import { PrismaClient } from '@prisma/client'
 import cuid2Extension from 'prisma-extension-cuid2'
 
-const prisma = new PrismaClient().$extend(cuid2Extension({
+const prisma = new PrismaClient().$extends(cuid2Extension({
   fields: ['SingleId:id', 'DualId:id1', 'DualId:id2']
 }))
 
